@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white">
+
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@color/sure_bg">
+
+        <ImageView
+                android:id="@+id/user_icon"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@mipmap/user_icon"
+                android:layout_centerInParent="true"/>
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/user_icon"
+                android:layout_marginTop="40dp"
+                android:layout_centerHorizontal="true"
+                android:text="欢迎登录百度鹰眼"
+                android:textSize="20sp"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1.2">
+
+        <com.baidu.track.ui.EditTextWithClear
+                android:id="@+id/entityName"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/shape_rect_round_bkg"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="80dp"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:maxLength="6"
+                android:hint="EntityName(6位字母或数字)"
+                android:textColorHint="#A0A0A0"/>
+        <Button
+                android:id="@+id/login"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_below="@id/entityName"
+                android:layout_marginTop="35dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/shape_rect_round_btn_unenabled_bkg"
+                android:enabled="false"
+                android:onClick="onLogin"
+                android:text="登 录"
+                android:textColor="@color/white"
+                android:textSize="20sp"/>
+
+    </RelativeLayout>
+
+</LinearLayout>
