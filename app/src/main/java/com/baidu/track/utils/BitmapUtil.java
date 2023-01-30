@@ -13,6 +13,7 @@ import com.baidu.track.R;
 
 public class BitmapUtil {
 
+    //用户自定义定位图标 BitmapDescriptor
     public static BitmapDescriptor bmArrowPoint = null;
 
     public static BitmapDescriptor bmStart = null;

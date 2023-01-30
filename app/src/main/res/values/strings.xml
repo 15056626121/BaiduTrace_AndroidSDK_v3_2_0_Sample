@@ -82,6 +82,8 @@
 
     <!-- TrackQueryOptionsActivity主选项 -->
     <string name="track_query_option_time">起止时间:</string>
+    <string name="track_query_imei">IMEI:</string>
+
     <string name="track_query_option_process">纠偏与数据分析:</string>
     <string name="track_query_option_radius_threshold">精度过滤(单位:米):</string>
     <string name="track_query_option_transport_mode">交通方式:</string>
@@ -95,6 +97,9 @@
     <!-- 精度过滤子选项-->
     <string name="radius_value">过滤值：</string>
     <string name="radius_hint">0</string>
+
+    <string name="query_strace">查询：</string>
+    <string name="beep">鸣叫：</string>
 
     <!-- 低速阈值-->
     <string name="lowspeedthreshold_value">低速阈值：</string>

@@ -40,6 +40,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setOptionsButtonInVisible();
         init();
+        //初始化地图上使用的点的坐标显示
         BitmapUtil.init();
     }
 

@@ -42,15 +42,19 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
 /**
- * Created by baidu on 17/1/12.
+ * Created by baidu on 17/1/12. https://www.jianshu.com/p/d21a65e06cdb
  */
 
 public class TrackApplication extends Application {
 
+    private static final String TAG = "application pine";
+
     private AtomicInteger mSequenceGenerator = new AtomicInteger();
 
+    //定位请求类
     private LocRequest locRequest = null;
 
     private Notification notification = null;
@@ -58,7 +62,7 @@ public class TrackApplication extends Application {
     public Context mContext = null;
 
     public List<ItemInfo> itemInfos = new ArrayList<>();
-
+    //存储辅助类
     public SharedPreferences trackConf = null;
 
     /**
@@ -74,7 +78,7 @@ public class TrackApplication extends Application {
     /**
      * 轨迹服务ID
      */
-    public long serviceId = 235490;
+    public long serviceId = 235633;
 
     /**
      * Entity标识
@@ -104,19 +108,23 @@ public class TrackApplication extends Application {
         LBSTraceClient.setAgreePrivacy(mContext, true);
         entityName = CommonUtil.getEntityName();
 
+        Log.i(TAG, "onCreate: application start");
         // 若为创建独立进程，则不初始化成员变量
         if ("com.baidu.track:remote".equals(CommonUtil.getCurProcessName(mContext))) {
             return;
         }
 
         SDKInitializer.initialize(mContext);
+        //初始化listview的item
         initView();
+        //创建一个通知栏类
         initNotification();
         try {
             mClient = new LBSTraceClient(mContext);
         } catch (Exception e) {
             e.getMessage();
         }
+        //记录我的轨迹
         mTrace = new Trace(serviceId, entityName);
         mTrace.setNotification(notification);
 
@@ -124,6 +132,7 @@ public class TrackApplication extends Application {
         locRequest = new LocRequest(serviceId);
 
         if (mClient != null) {
+            //SDK每采集一次轨迹 便会自动回调onTrackAttributeCallback()，获取属性值并写入当前轨迹点的属性字段中，自定义属性数据上传
             mClient.setOnCustomAttributeListener(new OnCustomAttributeListener() {
                 @Override
                 public Map<String, String> onTrackAttributeCallback() {
@@ -143,7 +152,7 @@ public class TrackApplication extends Application {
                 }
             });
         }
-
+        //清除缓存的trace
         clearTraceStatus();
     }
 
@@ -161,8 +170,10 @@ public class TrackApplication extends Application {
                 && trackConf.getBoolean("is_trace_started", false)
                 && trackConf.getBoolean("is_gather_started", false)) {
             LatestPointRequest request = new LatestPointRequest(getTag(), serviceId, entityName);
+            //算法类，降噪纠偏
             ProcessOption processOption = new ProcessOption();
             processOption.setNeedDenoise(true);
+            //获取定位点去噪精度 查询缓存距离时，对缓存的GPS轨迹点进行去噪 取值=0时，则不过滤；当取值大于0的整数时，则过滤掉radius大于设定值的轨迹点
             processOption.setRadiusThreshold(100);
             request.setProcessOption(processOption);
             mClient.queryLatestPoint(request, trackListener);
@@ -209,6 +220,9 @@ public class TrackApplication extends Application {
         Bitmap icon = BitmapFactory.decodeResource(this.getResources(),
                 R.mipmap.icon_tracing);
 
+        //NotificationManager是一个Android系统服务，用于管理和运行所有通知。
+        //NotificationManager因为是系统服务，所以不能被实例化，为了把Notification传给它，可以用getSystemService()方法获取一个NotificationManager的引用。
+        //在需要通知用户时再调用notify()方法将Notification对象传给它。
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         // 设置PendingIntent
         builder.setContentIntent(PendingIntent.getActivity(this, 0, notificationIntent, 0))

@@ -87,6 +87,7 @@ public class TrackQueryOptionsActivity extends BaseActivity
 
     public void onStartTime(View v) {
         if (null == startTimeCallback) {
+            //设置选择时间区间
             startTimeCallback = new DateDialog.Callback() {
                 @Override
                 public void onDateCallback(long timeStamp) {

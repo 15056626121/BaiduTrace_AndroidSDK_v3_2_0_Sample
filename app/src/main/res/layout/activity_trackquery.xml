@@ -21,15 +21,101 @@
         android:layout_below="@id/layout_top"
         android:clickable="true" />
 
-    <ImageButton
-        android:id="@+id/imgBtn_track_analysis"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginRight="25dp"
-        android:layout_marginBottom="80dp"
-        android:background="@mipmap/bg_btn_all_control"
-        android:onClick="onTrackAnalysis" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/item_margin_left"
+        android:layout_marginRight="@dimen/item_margin_right"
+        android:gravity="center|left|bottom"
+        android:layout_marginBottom="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:gravity="center|left"
+            android:text="@string/track_query_option_time"
+            android:textColor="@color/layout_title"
+            android:textSize="14dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginBottom="0dp"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <Button
+                android:id="@+id/start_time"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:layout_weight="0.5"
+                android:background="@mipmap/bg_btn_cancel"
+                android:onClick="onStartTime"
+                android:textColor="@color/layout_title"
+                android:textSize="10dp"></Button>
+
+            <Button
+                android:id="@+id/end_time"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="0.5"
+                android:background="@mipmap/bg_btn_cancel"
+                android:onClick="onEndTime"
+                android:textColor="@color/layout_title"
+                android:textSize="10dp"></Button>
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:gravity="center|left"
+            android:text="@string/track_query_imei"
+            android:textColor="@color/layout_title"
+            android:textSize="14dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <EditText
+                android:id="@+id/IMEI"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:layout_weight="0.7"
+                android:inputType="text"
+                android:background="@mipmap/bg_btn_cancel"
+                android:onClick="onInputIMEI"
+                android:textColor="@color/layout_title"
+                android:textSize="10dp"> </EditText>
+
+            <ImageButton
+                android:id="@+id/imgBtn_beep"
+                android:layout_weight="0.15"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@mipmap/beep"
+                android:onClick="onBeep" />
+
+            <ImageButton
+                android:id="@+id/imgBtn_query"
+                android:layout_weight="0.15"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@mipmap/query"
+                android:onClick="onQueryTrack" />
+
+    </LinearLayout>
+
+</LinearLayout>
 
 </RelativeLayout>
