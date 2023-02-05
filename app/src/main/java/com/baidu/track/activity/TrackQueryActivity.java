@@ -72,11 +72,20 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.os.Bundle;
+//import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
+import android.view.View;
+//import com.wildma.mqttandroidclient.MyMqttService;
+import com.mqtt.IGetMessageCallBack;
+import com.mqtt.MyMqttService;
+import com.mqtt.MyServiceConnection;
+
 /**
  * 轨迹查询
  */
 public class TrackQueryActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener,
-        View.OnClickListener, BaiduMap.OnMarkerClickListener , BaiduMap.OnMapClickListener {
+        View.OnClickListener, BaiduMap.OnMarkerClickListener , BaiduMap.OnMapClickListener , IGetMessageCallBack {
 
     private static final String TAG = "trackQuery";
 
@@ -256,6 +265,11 @@ public class TrackQueryActivity extends BaseActivity implements CompoundButton.O
     private NotificationManager notificationManager = null;
     private int notifyId = 0;
 
+    private Intent mMqttIntent = null;
+    private int BeepStatus = 0;
+
+    private MyServiceConnection myServiceConnection;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -265,6 +279,13 @@ public class TrackQueryActivity extends BaseActivity implements CompoundButton.O
         setOnClickListener(this);
         trackApp = (TrackApplication) getApplicationContext();
         init();
+
+        //开启MQTT服务
+        myServiceConnection = new MyServiceConnection();
+        myServiceConnection.setIGetMessageCallBack(this);
+
+        mMqttIntent = new Intent(TrackQueryActivity.this, MyMqttService.class);
+        bindService(mMqttIntent, myServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     /**
@@ -421,7 +442,24 @@ public class TrackQueryActivity extends BaseActivity implements CompoundButton.O
      * 点击onBeep按钮，通过MQTT使得飞机蜂鸣
      * */
     public void onBeep(View v) {
-        Log.i(TAG, "onBeep: MQTT control beep");
+        if (BeepStatus == 0) {
+            BeepStatus = 1;
+            myServiceConnection.publishMessage("start");
+            Log.i(TAG, "onBeep: beep on");
+        }
+        else {
+            BeepStatus = 0;
+            myServiceConnection.publishMessage("stop");
+            Log.i(TAG, "onBeep: beep off");
+        }
+    }
+
+    /**
+     * 实现从MQTT接受到消息的接口的回调
+     * */
+    @Override
+    public void setMessage(String message) {
+        Log.i(TAG, "MQTT receive" + message);
     }
 
     /**

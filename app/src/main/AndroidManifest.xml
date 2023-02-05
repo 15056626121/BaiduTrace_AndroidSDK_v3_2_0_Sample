@@ -18,6 +18,7 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
     <!-- 写入扩展存储，向扩展卡写入数据，用于写入对象存储BOS数据-->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
     <!-- 访问网络，网络定位需要上网-->
     <uses-permission android:name="android.permission.INTERNET"/>
 
@@ -33,6 +34,13 @@
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/>
     <!-- 用于Android M及以上系统，申请加入忽略电池优化白名单，可选权限，非必须-->
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+
+    <!-- 以下是MQTT需要的权限 -->
+<!--    <uses-permission android:name="android.permission.INTERNET" />-->
+<!--    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />-->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
             android:name=".TrackApplication"
@@ -97,6 +105,15 @@
                 android:enabled="true"
                 android:exported="true"
                 android:process=":remote" />
+
+        <service android:name="org.eclipse.paho.android.service.MqttService" /> <!--MqttService-->
+<!--        <service android:name="com.dongyk.service.MyMqttService"/> &lt;!&ndash;MyMqttService&ndash;&gt;-->
+<!--        <service android:name="org.eclipse.paho.android.service.MqttService" />-->
+        <service
+            android:name="com.mqtt.MyMqttService"
+            android:enabled="true"
+            android:exported="true"/>
+
     </application>
 
 </manifest>
