@@ -37,6 +37,7 @@ public class SplashActivity extends BaseActivity {
         init();
         //初始化地图上使用的点的坐标显示
         BitmapUtil.init();
+
         new Thread() {
             @Override
             public void run() {
@@ -49,30 +50,6 @@ public class SplashActivity extends BaseActivity {
                 }
             }
         }.start();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        CommonUtil.saveCurrentLocation(trackApp);
-        if (trackApp.mClient != null) {
-            if (trackApp.trackConf.contains("is_trace_started")
-                    && trackApp.trackConf.getBoolean("is_trace_started", true)) {
-                // 退出app停止轨迹服务时，不再接收回调，将OnTraceListener置空
-                trackApp.mClient.setOnTraceListener(null);
-                trackApp.mClient.stopTrace(trackApp.mTrace, null);
-            } else {
-                trackApp.mClient.clear();
-            }
-        }
-        trackApp.isTraceStarted = false;
-        trackApp.isGatherStarted = false;
-        SharedPreferences.Editor editor = trackApp.trackConf.edit();
-        editor.remove("is_trace_started");
-        editor.remove("is_gather_started");
-        editor.apply();
-
-        BitmapUtil.clear();
     }
 
     @Override

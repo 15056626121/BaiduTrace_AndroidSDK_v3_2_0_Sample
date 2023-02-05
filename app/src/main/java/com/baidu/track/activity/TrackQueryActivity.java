@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -130,7 +131,7 @@ public class TrackQueryActivity extends BaseActivity implements CompoundButton.O
 
     private static long  oneDay = 24 * 60 * 60;
 
-    private static long  oneWeek = 7;
+    private static long  oneQueryDay = 1;
     /**
      * 查询轨迹的开始时间
      */
@@ -246,6 +247,7 @@ public class TrackQueryActivity extends BaseActivity implements CompoundButton.O
     private Button endTimeBtn = null;
     private EditText imeiEdit = null;
     private String supplementMode;
+    private LinearLayout paramLayout = null;
     /**
      * 轨迹服务监听器
      */
@@ -305,6 +307,9 @@ public class TrackQueryActivity extends BaseActivity implements CompoundButton.O
         endTimeBuilder.append(simpleDateFormat.format(endTime * 1000));
         endTimeBtn.setText(endTimeBuilder.toString());
 
+        paramLayout = (LinearLayout) findViewById(R.id.paramLayout);
+        paramLayout.measure(0, 0);
+
         imeiEdit = (EditText) findViewById(R.id.IMEI) ;
         initListener();
     }
@@ -347,8 +352,8 @@ public class TrackQueryActivity extends BaseActivity implements CompoundButton.O
                 @Override
                 public void onDateCallback(long timeStamp) {
                     TrackQueryActivity.this.startTime = timeStamp;
-                    if ((endTime - startTime > oneWeek * oneDay) || (endTime - startTime < 0)) {
-                        endTime = startTime + oneWeek * oneDay;
+                    if ((endTime - startTime > oneQueryDay * oneDay) || (endTime - startTime < 0)) {
+                        endTime = startTime + oneQueryDay * oneDay;
 
                         StringBuilder startTimeBuilder = new StringBuilder();
                         startTimeBuilder.append(getResources().getString(R.string.end_time));
@@ -379,8 +384,8 @@ public class TrackQueryActivity extends BaseActivity implements CompoundButton.O
                 public void onDateCallback(long timeStamp) {
                     TrackQueryActivity.this.endTime = timeStamp;
 
-                    if ((endTime - startTime > oneWeek * oneDay) || (endTime - startTime < 0)) {
-                        startTime = endTime - oneWeek * oneDay;
+                    if ((endTime - startTime > oneQueryDay * oneDay) || (endTime - startTime < 0)) {
+                        startTime = endTime - oneQueryDay * oneDay;
 
                         StringBuilder startTimeBuilder = new StringBuilder();
                         startTimeBuilder.append(getResources().getString(R.string.start_time));
@@ -524,9 +529,29 @@ public class TrackQueryActivity extends BaseActivity implements CompoundButton.O
     }
 
     /**
-     * 查询历史轨迹
+     * 查询24小时内的历史轨迹
      */
     private void queryHistoryTrack() {
+        if (trackApp.mClient == null) {
+            return;
+        }
+        pageIndex = 1;
+        trackApp.initRequest(historyTrackRequest);
+        historyTrackRequest.setEntityName(trackApp.entityName);
+        historyTrackRequest.setPageIndex(pageIndex);
+        historyTrackRequest.setPageSize(Constants.PAGE_SIZE);
+        historyTrackRequest.setStartTime(startTime);
+        historyTrackRequest.setEndTime(endTime);
+        trackApp.mClient.queryHistoryTrack(historyTrackRequest, mTrackListener);
+        Log.i(TAG, "queryHistoryTrack: " +  " entity: " + historyTrackRequest.getEntityName()
+                + " serviceId:" + trackApp.serviceId + " startTime:" + simpleDateFormat.format(startTime * 1000)
+                + " endTime: " + simpleDateFormat.format(endTime * 1000));
+    }
+
+    /**
+     * 查询超过24小时的历史轨迹，分次查询
+     */
+    private void queryMultiHistoryTrack() {
         if (trackApp.mClient == null) {
             return;
         }
@@ -540,8 +565,6 @@ public class TrackQueryActivity extends BaseActivity implements CompoundButton.O
         long endTimetmp = 0;
         int  count = 0;
         for (long i = startTime; i < endTime; i += (24 * 60 * 60)) {
-            trackPoints.clear();
-
             count ++;
             startTimetmp = i;
             endTimetmp = startTimetmp + (24 * 60 * 60);
@@ -913,6 +936,8 @@ public class TrackQueryActivity extends BaseActivity implements CompoundButton.O
         mTrackListener = new OnTrackListener() {
             @Override
             public void onHistoryTrackCallback(HistoryTrackResponse response) {
+                trackPoints.clear();
+
                 int total = response.getTotal();
                 Log.i(TAG, "onHistoryTrackCallback: total track: " + total);
                 StringBuffer sb = new StringBuffer(256);
@@ -934,12 +959,12 @@ public class TrackQueryActivity extends BaseActivity implements CompoundButton.O
                     sb.append("总里程：");
                     sb.append(response.getDistance());
                     sb.append("米");
-                    sb.append("\n收费里程：");
-                    sb.append(response.getTollDistance());
-                    sb.append("米");
-                    sb.append("\n低速里程：");
-                    sb.append(response.getLowSpeedDistance());
-                    sb.append("米");
+                    sb.append("\n轨迹点数量：");
+                    sb.append(response.getTotal());
+                    sb.append("个");
+//                    sb.append("\n低速里程：");
+//                    sb.append(response.getLowSpeedDistance());
+//                    sb.append("米");
                     addView(mapUtil.mapView);
                     mHistoryTrackView.setText(sb.toString());
                 }
@@ -1105,8 +1130,10 @@ public class TrackQueryActivity extends BaseActivity implements CompoundButton.O
         MapViewLayoutParams.Builder builder = new MapViewLayoutParams.Builder();
         builder.layoutMode(MapViewLayoutParams.ELayoutMode.absoluteMode);
         builder.width(mapView.getWidth());
-        builder.height(200);
-        builder.point(new android.graphics.Point(0, mapView.getHeight()));
+        builder.height(2 * 70);
+        /*改变总里程显示的位置*/
+        builder.point(new android.graphics.Point(0, mapView.getHeight() - paramLayout.getMeasuredHeight()));
+        Log.i(TAG, "addView: " + mapView.getHeight() + " paramLayout " + paramLayout.getHeight() + " " +  paramLayout.getMeasuredHeight());
         builder.align(MapViewLayoutParams.ALIGN_LEFT, MapViewLayoutParams.ALIGN_BOTTOM);
         mapUtil.baiduMap.setViewPadding(0, 0, 0, 200);
         mapView.addView(mHistoryTrackView, builder.build());
@@ -1176,7 +1203,6 @@ public class TrackQueryActivity extends BaseActivity implements CompoundButton.O
         stayPointMarkers = null;
 
         mapUtil.clear();
-
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.baidu.track.utils;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.util.Log;
 
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
@@ -12,6 +13,8 @@ import com.baidu.track.R;
  */
 
 public class BitmapUtil {
+
+    private static final String TAG = "BitmapUtil:";
 
     //用户自定义定位图标 BitmapDescriptor
     public static BitmapDescriptor bmArrowPoint = null;
@@ -45,6 +48,8 @@ public class BitmapUtil {
         bmJsc = BitmapDescriptorFactory.fromResource(R.drawable.icon_jsc);
         bmJzw = BitmapDescriptorFactory.fromResource(R.drawable.icon_jzw);
         bmStay = BitmapDescriptorFactory.fromResource(R.drawable.icon_stay);
+
+        Log.i(TAG, "init: success");
     }
 
     /**
